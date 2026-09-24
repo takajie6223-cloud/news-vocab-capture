@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>设置 · Reuters 取词生词本</title>
+  <link rel="stylesheet" href="options.css" />
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>设置</h1>
+      <p class="sub">Reuters 取词生词本 · 本地优先，设置使用 chrome.storage.sync 同步</p>
+    </header>
+
+    <section class="card">
+      <h2>查词与翻译</h2>
+      <label class="row">
+        <span>翻译源</span>
+        <select id="translateSource">
+          <option value="auto">自动（本地词表 → Google）</option>
+          <option value="google">Google</option>
+          <option value="mymemory">MyMemory</option>
+          <option value="localOnly">仅本地词表</option>
+          <option value="localLLM">词表 + 本机模型（不走 Google）</option>
+        </select>
+      </label>
+      <label class="row">
+        <span>气泡字号</span>
+        <input id="fontSize" type="range" min="12" max="20" step="1" />
+        <em id="fontSizeVal">15px</em>
+      </label>
+      <label class="check">
+        <input id="enableSelection" type="checkbox" />
+        <span>划词查词（双击始终可用）</span>
+      </label>
+      <label class="check">
+        <input id="sentenceDefault" type="checkbox" />
+        <span>划选句子时默认整句翻译</span>
+      </label>
+      <label class="check">
+        <input id="hotkeysHint" type="checkbox" />
+        <span>气泡内显示快捷键提示</span>
+      </label>
+    </section>
+
+    <section class="card">
+      <h2>本机模型（词表未命中时）</h2>
+      <p class="tip">
+        默认不用模型：<strong>本地词表秒回</strong>，没有的词走 Google。<br/>下面的模型补查可选，不用 Ollama 可整段忽略。
+      </p>
+      <label class="check">
+        <input id="enableLLM" type="checkbox" />
+        <span>（可选）启用本机模型补查</span>
+      </label>
+      <div class="preset-row">
+        <button type="button" class="btn" data-preset="ollama">Ollama</button>
+        <button type="button" class="btn" data-preset="lmstudio">LM Studio</button>
+        <button type="button" class="btn" data-preset="vllm">vLLM</button>
+      </div>
+      <label class="row">
+        <span>Base URL</span>
+        <input id="llmBaseUrl" type="text" placeholder="http://127.0.0.1:11434/v1" />
+      </label>
+      <label class="row">
+        <span>模型</span>
+        <input id="llmModel" type="text" placeholder="qwen3.5:4b" />
+      </label>
+      <label class="row">
+        <span>API Key</span>
+        <input id="llmApiKey" type="password" placeholder="本机可留空" autocomplete="off" />
+      </label>
+      <div class="toolbar-row" style="margin-top:8px">
+        <button type="button" class="btn" id="btn-test-llm">测试连接</button>
+        <span class="msg" id="llm-test-msg"></span>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>站点</h2>
+      <label class="row">
+        <span>域名白名单</span>
+        <input id="domainAllowlist" type="text" placeholder="reuters.com,www.reuters.com" />
+      </label>
+      <p class="tip">逗号分隔。注入站点以 manifest 的 matches 为准（覆盖主流英文新闻媒体）。</p>
+    </section>
+
+    <section class="card">
+      <h2>快捷键</h2>
+      <ul class="keys">
+        <li><kbd>Alt</kbd>+<kbd>S</kbd> 收藏当前气泡词</li>
+        <li><kbd>Alt</kbd>+<kbd>V</kbd> 打开侧栏生词本</li>
+        <li><kbd>Alt</kbd>+<kbd>R</kbd> 进入复习</li>
+        <li><kbd>Esc</kbd> 关闭气泡</li>
+      </ul>
+      <p class="tip">可在 <code>chrome://extensions/shortcuts</code> 中改键。</p>
+    </section>
+
+    <div class="footer-actions">
+      <button class="btn primary" id="btn-save">保存设置</button>
+      <span class="msg" id="msg"></span>
+    </div>
+  </div>
+  <script type="module" src="options.js"></script>
+</body>
+</html>

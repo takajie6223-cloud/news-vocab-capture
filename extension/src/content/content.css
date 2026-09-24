@@ -1,0 +1,202 @@
+/* 取词气泡与浮动条 — 纸感 + 路透橙 */
+.rv-root {
+  all: initial;
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+}
+
+.rv-bubble {
+  position: fixed;
+  z-index: 2147483000;
+  min-width: 220px;
+  max-width: 340px;
+  background: #ffffff;
+  color: #1a1a18;
+  border: 1px solid #e6e6e0;
+  border-radius: 12px;
+  box-shadow: 0 8px 28px rgba(26, 26, 24, 0.12);
+  padding: 12px 14px;
+  font-size: 14px;
+  line-height: 1.45;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.08s ease, transform 0.08s ease;
+  pointer-events: auto;
+}
+
+.rv-bubble.rv-show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.rv-word {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 20px;
+  font-weight: 600;
+  color: #1a1a18;
+  margin: 0 0 2px;
+  word-break: break-word;
+}
+
+.rv-phonetic {
+  color: #8a8a82;
+  font-size: 12px;
+  margin: 0 0 6px;
+}
+
+.rv-meta {
+  color: #5c5c56;
+  font-size: 13px;
+  margin: 0 0 4px;
+}
+
+.rv-pos {
+  display: inline-block;
+  background: #f3f3ee;
+  border-radius: 4px;
+  padding: 0 6px;
+  margin-right: 6px;
+  font-size: 12px;
+  color: #5c5c56;
+}
+
+.rv-meaning {
+  font-size: 15px;
+  color: #1a1a18;
+  margin: 0 0 4px;
+}
+
+.rv-def {
+  font-size: 12px;
+  color: #8a8a82;
+  margin: 0 0 8px;
+}
+
+.rv-sentence-box {
+  background: #fafaf8;
+  border-radius: 8px;
+  padding: 8px 10px;
+  margin: 0 0 8px;
+  max-height: 96px;
+  overflow: auto;
+}
+
+.rv-sentence-en {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 13px;
+  color: #1a1a18;
+  margin: 0 0 4px;
+}
+
+.rv-sentence-zh {
+  font-size: 13px;
+  color: #5c5c56;
+  margin: 0;
+}
+
+.rv-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.rv-btn {
+  all: unset;
+  box-sizing: border-box;
+  cursor: pointer;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 13px;
+  background: #f3f3ee;
+  color: #1a1a18;
+  transition: background 0.12s ease, transform 0.12s ease;
+}
+
+.rv-btn:hover {
+  background: #e8e8e0;
+}
+
+.rv-btn.rv-primary {
+  background: #fa6400;
+  color: #fff;
+}
+
+.rv-btn.rv-primary:hover {
+  background: #e85a00;
+}
+
+.rv-btn.rv-saved {
+  background: #fff4ec;
+  color: #fa6400;
+  border: 1px solid #ffd2b0;
+}
+
+.rv-btn.rv-star {
+  font-size: 16px;
+  padding: 4px 10px;
+  line-height: 1.2;
+}
+
+.rv-btn.rv-star.rv-pop {
+  animation: rv-pop 0.28s ease;
+}
+
+@keyframes rv-pop {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.18); }
+  100% { transform: scale(1); }
+}
+
+.rv-hint {
+  margin-left: auto;
+  font-size: 11px;
+  color: #b0b0a8;
+}
+
+.rv-status {
+  font-size: 12px;
+  color: #8a8a82;
+  margin: 6px 0 0;
+}
+
+.rv-error {
+  color: #c92a2a;
+}
+
+.rv-dock {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 2147482999;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #ffffff;
+  border: 1px solid #e6e6e0;
+  border-radius: 999px;
+  box-shadow: 0 6px 20px rgba(26, 26, 24, 0.1);
+  padding: 8px 12px;
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  font-size: 13px;
+  color: #1a1a18;
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.12s ease;
+}
+
+.rv-dock:hover {
+  transform: translateY(-1px);
+}
+
+.rv-dock-star {
+  color: #fa6400;
+  font-size: 14px;
+}
+
+.rv-dock-count {
+  font-variant-numeric: tabular-nums;
+}
+
+.rv-loading::after {
+  content: '…';
+}

@@ -1,0 +1,147 @@
+:root {
+  --bg: #fafaf8;
+  --card: #ffffff;
+  --ink: #1a1a18;
+  --sub: #5c5c56;
+  --muted: #8a8a82;
+  --line: #e6e6e0;
+  --soft: #f3f3ee;
+  --accent: #fa6400;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  line-height: 1.55;
+}
+
+.wrap {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 32px 20px 64px;
+}
+
+header h1 {
+  margin: 0 0 4px;
+  font-size: 24px;
+}
+
+.sub {
+  margin: 0 0 24px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 18px 18px 8px;
+  margin-bottom: 16px;
+}
+
+.card h2 {
+  margin: 0 0 12px;
+  font-size: 15px;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 110px 1fr auto;
+  gap: 10px;
+  align-items: center;
+  padding: 8px 0;
+  font-size: 13px;
+}
+
+.row span { color: var(--sub); }
+
+.row input[type='text'],
+.row input[type='password'],
+.row select {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 13px;
+  background: var(--bg);
+  color: var(--ink);
+}
+
+.row input[type='range'] { width: 100%; }
+.row em { font-style: normal; color: var(--muted); min-width: 36px; }
+
+.check {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 8px 0;
+  font-size: 13px;
+}
+
+.tip {
+  color: var(--muted);
+  font-size: 12px;
+  margin: 4px 0 10px;
+}
+
+.keys {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--sub);
+  font-size: 13px;
+}
+
+kbd {
+  background: var(--soft);
+  border: 1px solid var(--line);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  padding: 1px 5px;
+  font-size: 12px;
+  font-family: inherit;
+}
+
+code {
+  background: var(--soft);
+  padding: 1px 4px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.footer-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.btn {
+  border: 1px solid var(--line);
+  background: var(--soft);
+  color: var(--ink);
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.btn.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.msg {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.msg.ok { color: #2f9e44; }
+.msg.err { color: #c92a2a; }
+
+.preset-row { display: flex; gap: 8px; flex-wrap: wrap; padding: 4px 0 8px; }

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>取词交互验证页</title>
+  <style>
+    body { font-family: Georgia, serif; max-width: 720px; margin: 40px auto; line-height: 1.7; font-size: 22px; }
+    h1 { font-size: 32px; line-height: 1.3; }
+    .spacer { height: 1200px; background: linear-gradient(#fff, #eee); }
+  </style>
+</head>
+<body>
+  <h1>Iranian flights cancelled as new US 'D-Day' sanctions take effect</h1>
+  <p>Saudi Arabia said they shoot down Houthi missiles amid unprecedented regional tensions.</p>
+  <p>The parliament will vote on a draft treaty after the summit.</p>
+  <div class="spacer">↓ 滚动后再双击，用于验证 fixed 定位（此前会跑出视口）</div>
+  <p>Inflation and recession fears continue to dominate markets this week.</p>
+  <script>
+    // 模拟 chrome.runtime：强制补齐（原生 chrome.runtime 可能是 undefined）
+    // id 必须有：真实内容脚本一定带 chrome.runtime.id，ctxAlive() 靠它判断
+    window.chrome = window.chrome || {};
+    window.chrome.runtime = {
+      id: 'rv-test-extension',
+      sendMessage: async (msg) => {
+        if (msg && msg.type === 'GET_SETTINGS') {
+          return { ok: true, settings: { fontSize: 15, sentenceDefault: false, enableSelection: true, hotkeysHint: true } };
+        }
+        if (msg && msg.type === 'GET_TODAY_COUNT') return { ok: true, count: 0 };
+        if (msg && msg.type === 'FIND_WORD') return { ok: true, found: false };
+        if (msg && msg.type === 'LOOKUP') {
+          window.__lookups = window.__lookups || [];
+          window.__lookups.push({ word: msg.word, sentence: msg.sentence });
+          return { word: msg.word, meaning: '【测试义】' + msg.word, phonetic: '/test/', pos: 'n.', defEn: 'stub' };
+        }
+        if (msg && msg.type === 'SAVE_WORD') return { ok: true, created: true };
+        if (msg && msg.type === 'TRANSLATE_SENTENCE') return { text: '【句译】' + msg.text };
+        return { ok: true };
+      },
+      onMessage: { addListener() {} },
+    };
+  </script>
+  <script src="content-inject.js"></script>
+</body>
+</html>

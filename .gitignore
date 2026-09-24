@@ -1,0 +1,20 @@
+# macOS
+.DS_Store
+
+# 依赖与测试产物
+node_modules/
+test/node_modules/
+test/page.html.built
+test/output/
+test/.playwright-cli/
+test/verify.png
+test/verify-log.txt
+
+# 本地数据与内部文件（不入库）
+生词本/
+extension-backup-*/
+回退说明.md
+*.log
+test/verify-cli.sh
+test/index.html
+test/page-test.html

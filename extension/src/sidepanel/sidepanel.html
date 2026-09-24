@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>生词本</title>
+  <link rel="stylesheet" href="sidepanel.css" />
+</head>
+<body>
+  <header class="top">
+    <div class="brand">
+      <span class="logo">★</span>
+      <div>
+        <h1>生词本</h1>
+        <p class="sub" id="stats">加载中…</p>
+      </div>
+    </div>
+    <div class="top-actions">
+      <button class="icon-btn" id="btn-settings" title="设置">⚙</button>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <input id="search" type="search" placeholder="搜索单词 / 释义 / 例句" />
+    <div class="filters" role="tablist">
+      <button class="chip active" data-filter="all">全部</button>
+      <button class="chip" data-filter="due">待复习</button>
+      <button class="chip" data-filter="mastered">已掌握</button>
+      <button class="chip" data-filter="recent">最近</button>
+    </div>
+    <div class="toolbar-row">
+      <button class="btn primary" id="btn-review">开始复习</button>
+      <button class="btn" id="btn-export-csv">Anki CSV</button>
+      <button class="btn" id="btn-export-md">Markdown</button>
+    </div>
+  </div>
+
+  <main id="list" class="list"></main>
+
+  <section id="detail" class="detail hidden"></section>
+
+  <section id="review" class="review hidden">
+    <div class="review-card" id="review-card">
+      <p class="review-tag" id="review-tag"></p>
+      <h2 class="review-word" id="review-word"></h2>
+      <p class="review-phonetic" id="review-phonetic"></p>
+      <div class="review-back hidden" id="review-back">
+        <p class="review-meaning" id="review-meaning"></p>
+        <p class="review-def" id="review-def"></p>
+        <p class="review-sentence" id="review-sentence"></p>
+      </div>
+    </div>
+    <div class="review-actions">
+      <button class="btn" id="btn-flip">显示答案（空格）</button>
+      <div class="grade hidden" id="grade">
+        <button class="btn danger" data-grade="again">忘了</button>
+        <button class="btn" data-grade="hard">模糊</button>
+        <button class="btn primary" data-grade="good">记得</button>
+        <button class="btn ok" data-grade="easy">太简单</button>
+      </div>
+    </div>
+    <button class="btn ghost" id="btn-exit-review">退出复习</button>
+  </section>
+
+  <script type="module" src="sidepanel.js"></script>
+</body>
+</html>
