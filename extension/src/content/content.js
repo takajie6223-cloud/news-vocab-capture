@@ -150,6 +150,8 @@
     });
     shadow.appendChild(dock);
 
+    wireActionDelegation();
+
     document.documentElement.appendChild(host);
     window.__rvHost = host;
   }
@@ -515,39 +517,81 @@
     `;
 
     positionBubble(payload.rect);
-    wireBubble(payload);
     if (isSel && payload.sentence) {
       runSentenceTranslation(payload.sentence);
     }
     if (typeof syncDebug === 'function') syncDebug();
   }
 
-  function wireBubble(payload) {
-    const saveBtn = shadow.getElementById('rv-save');
-    const copyBtn = shadow.getElementById('rv-copy');
-    const sentBtn = shadow.getElementById('rv-sent');
+  /** 从指针/点击事件里识别动作按钮（按钮随渲染重建，委托到气泡容器上永不丢监听） */
+  function actionFromEvent(e) {
+    const path = e.composedPath ? e.composedPath() : [];
+    for (let i = 0; i < path.length; i++) {
+      const n = path[i];
+      if (n && (n.id === 'rv-save' || n.id === 'rv-copy' || n.id === 'rv-sent')) return n.id;
+    }
+    return null;
+  }
 
-    saveBtn?.addEventListener('click', async (e) => {
+  function runAction(id) {
+    if (!current || !bubble) return;
+    if (id === 'rv-save') {
+      saveCurrent(shadow.getElementById('rv-save'));
+    } else if (id === 'rv-copy') {
+      const text = `${current.head} ${(current.result && current.result.meaning) || ''}`.trim();
+      navigator.clipboard.writeText(text).then(
+        () => setStatus('已复制'),
+        () => setStatus('复制失败', true)
+      );
+    } else if (id === 'rv-sent') {
+      runSentenceTranslation(current.sentence);
+    }
+  }
+
+  // 最近一次按下的动作（用于「页面吞掉 click」时的兜底执行）
+  let lastAction = null;
+
+  function wireActionDelegation() {
+    if (!bubble) return;
+    // ① 常规路径：click 冒泡到气泡容器。监听器挂在容器上，
+    //    mousedown/mouseup 之间按钮被重新渲染也能命中（click 落在公共祖先=容器）
+    bubble.addEventListener('click', (e) => {
+      const id = actionFromEvent(e);
+      if (!id) return;
       e.preventDefault();
       e.stopPropagation();
-      await saveCurrent(saveBtn);
+      if (lastAction && lastAction.id === id) lastAction.done = true;
+      runAction(id);
     });
-    copyBtn?.addEventListener('click', async (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      const text = `${payload.head} ${current?.result?.meaning || ''}`.trim();
-      try {
-        await navigator.clipboard.writeText(text);
-        setStatus('已复制');
-      } catch (_) {
-        setStatus('复制失败', true);
-      }
-    });
-    sentBtn?.addEventListener('click', async (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      await runSentenceTranslation(payload.sentence);
-    });
+    // ② 兜底：个别站点会把气泡按钮的真实 click 吞在页面层。
+    //    监听挂在气泡容器的捕获阶段（影子树内部，能识别具体按钮）：
+    //    pointerdown+pointerup 都在同一按钮上、150ms 内没等到 click 就直接执行。
+    bubble.addEventListener(
+      'pointerdown',
+      (e) => {
+        if (e.target === bubble) return;
+        const id = actionFromEvent(e);
+        lastAction = id ? { id, t: Date.now(), done: false } : null;
+      },
+      true
+    );
+    bubble.addEventListener(
+      'pointerup',
+      (e) => {
+        if (!lastAction || lastAction.done) return;
+        const id = actionFromEvent(e);
+        if (!id || id !== lastAction.id) {
+          lastAction = null;
+          return;
+        }
+        setTimeout(() => {
+          if (!lastAction || lastAction.id !== id || lastAction.done) return;
+          lastAction.done = true;
+          runAction(id);
+        }, 150);
+      },
+      true
+    );
   }
 
   async function lookupAndShow(head, sentence, rect, mode) {
@@ -942,9 +986,10 @@
   }
 
   function fromUi(target) {
-    if (!host) return false;
-    const path = target && target.composedPath ? target.composedPath() : [];
-    return path.indexOf(host) !== -1;
+    // 闭式 shadow root 下，文档层监听器拿到的事件 target 就是 host，
+    // 但 composedPath() 会返回空数组（shadow 内部路径对外不可见），
+    // 所以这里必须直接比较 target === host，不能用 path.indexOf(host)。
+    return !!host && target === host;
   }
 
   // —— 双击：坐标取词 + 精确 head ——
@@ -1221,6 +1266,21 @@
           r.left >= -2 &&
           r.bottom <= window.innerHeight + 2 &&
           r.right <= window.innerWidth + 2,
+      };
+    },
+    saveBtnRect: () => {
+      if (!shadow || !bubble) return null;
+      const b = shadow.getElementById('rv-save');
+      if (!b) return null;
+      const r = b.getBoundingClientRect();
+      return {
+        left: r.left,
+        top: r.top,
+        width: r.width,
+        height: r.height,
+        pe: getComputedStyle(b).pointerEvents,
+        bubblePE: getComputedStyle(bubble).pointerEvents,
+        shown: bubble.classList.contains('rv-show'),
       };
     },
   };

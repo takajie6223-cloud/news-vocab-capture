@@ -175,6 +175,52 @@ check('两词严格相等 Iranian flights', s.head === 'Iranian flights', `head=
   check('空白点击后再点词仍正常弹气泡', s.visible && s.head === 'sanctions', `head=${JSON.stringify(s.head)} visible=${s.visible}`);
 }
 
+// —— 9) 真实鼠标点击气泡内「收藏 / 复制」按钮（回归：按钮点击必须可用） ——
+{
+  // 弹出 sanctions 气泡
+  const t = await page.evaluate(() => {
+    const h = document.querySelector('h1');
+    const node = h.firstChild;
+    const idx = node.textContent.indexOf('sanctions');
+    const r = document.createRange();
+    r.setStart(node, idx);
+    r.setEnd(node, idx + 'sanctions'.length);
+    const rc = r.getBoundingClientRect();
+    return { x: rc.left + rc.width / 2, y: rc.top + rc.height / 2 };
+  });
+  await page.mouse.dblclick(t.x, t.y);
+  await page.waitForTimeout(400);
+  s = await dbg();
+  const br = s.bubbleRect;
+  check('按钮用例前置：气泡可见', s.visible && !!br, JSON.stringify(br));
+
+  // 真实鼠标点击「收藏」按钮（用 __rvDebug.saveBtnRect 拿按钮精确矩形）
+  const btn = await page.evaluate(() => window.__rvDebug.saveBtnRect());
+  const savesBefore = (await page.evaluate(() => (window.__saves || []).length));
+  await page.mouse.click(btn.left + btn.width / 2, btn.top + btn.height / 2);
+  await page.waitForTimeout(400);
+  s = await dbg();
+  const savesAfter = (await page.evaluate(() => (window.__saves || []).length));
+  check('真实点击「收藏」按钮完成收藏', savesAfter === savesBefore + 1, `saves=${savesAfter} (was ${savesBefore})`);
+  check('收藏后按钮变为已藏状态', (s.bubbleText || '').includes('已藏'), s.bubbleText.slice(-120));
+
+  // Alt+S 快捷键收藏仍可用
+  await page.keyboard.press('Alt+s');
+  await page.waitForTimeout(300);
+  const savesKbd = (await page.evaluate(() => (window.__saves || []).length));
+  check('Alt+S 快捷键收藏仍可用', savesKbd === savesAfter + 1, `saves=${savesKbd}`);
+
+  // 真实鼠标点击「复制」按钮：状态行必须有反馈（证明事件可达）
+  const cpy = await page.evaluate(() => {
+    const b = window.__rvDebug.saveBtnRect();
+    return { x: b.left + b.width + 45, y: b.top + b.height / 2 };
+  });
+  await page.mouse.click(cpy.x, cpy.y);
+  await page.waitForTimeout(300);
+  s = await dbg();
+  check('真实点击「复制」按钮有状态反馈', (s.bubbleText || '').includes('已复制') || (s.bubbleText || '').includes('复制失败'), s.bubbleText.slice(-80));
+}
+
 await page.screenshot({ path: join(root, 'verify.png'), fullPage: false });
 
 // —— 6) 真实单击词表外单词 cancelled（回归：mousedown 会清空 current；
@@ -201,6 +247,9 @@ await page.screenshot({ path: join(root, 'verify.png'), fullPage: false });
 
 // —— 6b) 单击词库真没有的词 Houthi（专有名词）：必须走网络查询且有释义 ——
 {
+  // 先点空白关掉上一步的气泡，避免它悬浮在 Houthi 上方吃掉点击
+  await page.mouse.click(100, 500);
+  await page.waitForTimeout(300);
   const t = await page.evaluate(() => {
     const p = [...document.querySelectorAll('p')].find((x) => x.textContent.includes('Houthi'));
     const node = p.firstChild;

@@ -32,7 +32,11 @@
           window.__lookups.push({ word: msg.word, sentence: msg.sentence });
           return { word: msg.word, meaning: '【测试义】' + msg.word, phonetic: '/test/', pos: 'n.', defEn: 'stub' };
         }
-        if (msg && msg.type === 'SAVE_WORD') return { ok: true, created: true };
+        if (msg && msg.type === 'SAVE_WORD') {
+          window.__saves = window.__saves || [];
+          window.__saves.push(msg.entry && msg.entry.word);
+          return { ok: true, created: true };
+        }
         if (msg && msg.type === 'TRANSLATE_SENTENCE') return { text: '【句译】' + msg.text };
         return { ok: true };
       },
