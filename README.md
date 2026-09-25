@@ -4,7 +4,7 @@
 
 在英文网页读稿时：**单击 / 双击 / 划词**出中文释义气泡，一键 **★ 收藏**，侧栏复习与导出。
 
-已覆盖主流英文新闻站点（路透、WSJ、NYT、经济学人、FT、卫报、Nikkei 等），以及 **X（Twitter）、Reddit、GitHub、Hugging Face** 等社区/工具站。例如：nytimes.com、wsj.com、reuters.com、economist.com、x.com、reddit.com、github.com、huggingface.co…
+已覆盖主流英文新闻站点（路透、WSJ、NYT、经济学人、FT、卫报、Nikkei 等），以及 **X（Twitter）、Reddit、GitHub、Hugging Face** 等社区/工具站，另有日媒专区（Nikkei Asia、Business Insider Japan、The Japan Times、The Japan News 等）。例如：nytimes.com、wsj.com、reuters.com、economist.com、x.com、reddit.com、asia.nikkei.com、japantimes.co.jp、github.com、huggingface.co…
 
 设计说明见 [DESIGN.md](./DESIGN.md)。
 
