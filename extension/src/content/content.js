@@ -239,6 +239,18 @@
     return m && m.length ? m.slice(0, 2).join(' ') : '';
   }
 
+  /** 穿透 open shadow root 的 elementFromPoint：新版 Reddit 等站点正文在 shadow 里，
+      文档层的 elementFromPoint 只会返回组件宿主（其 textContent 不含影子树内容） */
+  function deepElementFromPoint(x, y) {
+    let el = document.elementFromPoint(x, y);
+    for (let i = 0; i < 6 && el && el.shadowRoot; i++) {
+      const inner = el.shadowRoot.elementFromPoint(x, y);
+      if (!inner || inner === el) break;
+      el = inner;
+    }
+    return el;
+  }
+
   /** 取光标下英文词：caret 词边界优先，其次链接短文本，再次按 x 估词；点在空白处一律返回空 */
   function headFromDblclick(clientX, clientY) {
     // 1) caret 词边界：取到的词矩形必须盖住/贴近点击点
@@ -266,7 +278,7 @@
       // caret 落在词间空白：继续走元素兜底
     }
 
-    const el = document.elementFromPoint(clientX, clientY);
+    const el = deepElementFromPoint(clientX, clientY);
     if (el && el.closest) {
       // 链接等短节点（元素就在点击点下方，文字即所见）
       const link = el.closest('a,button,[role="link"],[role="button"]');

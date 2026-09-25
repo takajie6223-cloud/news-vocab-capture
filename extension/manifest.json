@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "新闻取词生词本",
-  "version": "1.4.2",
+  "version": "1.4.3",
   "description": "在主流英文新闻站双击/划词快速查中文释义，一键收藏生词，侧栏复习与导出。",
   "icons": {
     "16": "icons/icon16.png",
@@ -114,6 +114,8 @@
     "https://*.popsci.com/*",
     "https://qz.com/*",
     "https://*.qz.com/*",
+    "https://reddit.com/*",
+    "https://*.reddit.com/*",
     "https://reuters.com/*",
     "https://*.reuters.com/*",
     "https://science.org/*",
@@ -276,6 +278,8 @@
         "https://*.popsci.com/*",
         "https://qz.com/*",
         "https://*.qz.com/*",
+        "https://reddit.com/*",
+        "https://*.reddit.com/*",
         "https://reuters.com/*",
         "https://*.reuters.com/*",
         "https://science.org/*",
