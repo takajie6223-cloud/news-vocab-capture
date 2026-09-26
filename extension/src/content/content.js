@@ -32,6 +32,17 @@
   const PREFETCH_MAX = 20;
   let scrollHideTimer = null;
 
+  // YouTube 字幕区按下状态：click 时拦截播放器的暂停/全屏反应，只出翻译气泡
+  let ytCaptionPress = null;
+
+  function ytCaptionHit(t) {
+    try {
+      return !!(t && t.closest && t.closest('.ytp-caption-segment'));
+    } catch (_) {
+      return false;
+    }
+  }
+
   const CSS = `
 .rv-bubble {
   position: absolute;
@@ -1009,6 +1020,11 @@
     'dblclick',
     (e) => {
       if (fromUi(e.target)) return;
+      // YouTube 字幕：双击取词时拦下播放器的全屏切换
+      if (ytCaptionPress) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
       // 带链接的生词（如下划线的 propane）双击不要跳走
       if (e.target && e.target.closest && e.target.closest('a')) {
         e.preventDefault();
@@ -1022,6 +1038,8 @@
 
       const head = headFromEvent(e);
       if (!head) return;
+      // 与刚弹出的内容相同则不重复查询（字幕双击会先触发两次 click 再到 dblclick）
+      if (current && current.head === head && Date.now() - justShownAt < 800) return;
 
       const rect = rectForDblclick(e.clientX, e.clientY);
       // 双击默认只查这个词；附带上下文句便于理解，但不改变 head
@@ -1036,6 +1054,26 @@
     'click',
     (e) => {
       if (fromUi(e.target)) return;
+      // YouTube 字幕：单击取词并拦下播放器的暂停反应（没取到词则放行）
+      if (ytCaptionPress && maxDrag < 3) {
+        const word = headFromDblclick(e.clientX, e.clientY);
+        if (word && /^[A-Za-z]/.test(word)) {
+          e.preventDefault();
+          e.stopPropagation();
+          ignoreSelectUntil = Date.now() + 300;
+          if (selectTimer) {
+            clearTimeout(selectTimer);
+            selectTimer = null;
+          }
+          const same = current && current.head === word && Date.now() - justShownAt < 800;
+          if (!same) {
+            const sentence = sentenceAroundPoint(e.clientX, e.clientY);
+            lookupAndShow(word, sentence && sentence !== word ? sentence : '', rectForDblclick(e.clientX, e.clientY)).catch(function () {});
+          }
+          return;
+        }
+        ytCaptionPress = null;
+      }
       if (e.detail === 2) {
         // 双击兜底
         ignoreSelectUntil = Date.now() + 280;
@@ -1121,6 +1159,8 @@
     'mousedown',
     (e) => {
       if (fromUi(e.target)) return;
+      // YouTube 字幕区按下：记录，click 时拦截播放器的暂停/全屏反应
+      ytCaptionPress = ytCaptionHit(e.target);
       downX = e.clientX;
       downY = e.clientY;
       downAt = Date.now();
@@ -1183,6 +1223,21 @@
     },
     true
   );
+
+  // —— 复制触发整句翻译：Cmd+C 复制句子时自动弹出整句翻译气泡（不影响复制本身） ——
+  let lastCopyText = '';
+  let lastCopyAt = 0;
+  document.addEventListener('copy', () => {
+    try {
+      const text = exactSelection();
+      if (!text || text.length < 8 || text.length > 2000) return;
+      const now = Date.now();
+      if (text === lastCopyText && now - lastCopyAt < 800) return;
+      lastCopyText = text;
+      lastCopyAt = now;
+      lookupAndShow(text, text, rectFromSelection(), 'selection').catch(function () {});
+    } catch (_) {}
+  });
 
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') hideBubble();
