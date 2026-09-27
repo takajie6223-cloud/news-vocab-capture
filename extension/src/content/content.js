@@ -32,12 +32,15 @@
   const PREFETCH_MAX = 20;
   let scrollHideTimer = null;
 
-  // YouTube 字幕区按下状态：click 时拦截播放器的暂停/全屏反应，只出翻译气泡
+  // 字幕区按下状态：click 时拦截播放器的暂停/全屏反应，只出翻译气泡
+  // 覆盖两类字幕容器：YouTube 自带字幕(.ytp-caption-segment) 与 Chrome 实时字幕(Live Caption, .a4cQT)
   let ytCaptionPress = null;
+
+  const CAPTION_SEL = '.ytp-caption-segment, .a4cQT';
 
   function ytCaptionHit(t) {
     try {
-      return !!(t && t.closest && t.closest('.ytp-caption-segment'));
+      return !!(t && t.closest && t.closest(CAPTION_SEL));
     } catch (_) {
       return false;
     }
