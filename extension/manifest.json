@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "新闻取词生词本",
-  "version": "1.4.6",
+  "version": "1.4.7",
   "description": "在主流英文新闻站双击/划词快速查中文释义，一键收藏生词，侧栏复习与导出。",
   "icons": {
     "16": "icons/icon16.png",
@@ -375,7 +375,8 @@
       "css": [
         "src/content/content.css"
       ],
-      "run_at": "document_idle"
+      "run_at": "document_idle",
+      "all_frames": true
     }
   ],
   "commands": {
